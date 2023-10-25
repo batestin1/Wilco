@@ -40,18 +40,6 @@ def get_id_artist(artist):
     response = requests.get(url, headers=headers).json()
     return response['artists']['items'][0]['id']
 
-def get_song_features(track_id):
-    url = f"https://api.spotify.com/v1/audio-features/{track_id}"
-    headers = get_auth_header(token)
-    response = requests.get(url, headers=headers).json()
-    return response
-
-def get_song_play_count(track_id):
-    # You'll need to implement a method to retrieve play count from Spotify or another source.
-    # This might require a different API or data source.
-    # Add your implementation here.
-    pass
-
 def get_lyrics(artist, track_name):
     genius = Genius(genius_id)  
     song = genius.search_song(track_name, artist)
@@ -75,7 +63,6 @@ albums_ = []
 tracklist = []
 years = []
 lyrics = []
-durations = []
 
 for n in tqdm(range(len(response['items']))):
     album_name = response['items'][n]['name']
@@ -91,17 +78,13 @@ for n in tqdm(range(len(response['items']))):
         tracklist.append(track['name'])
         years.append(album_year)
         lyrics.append(get_lyrics(artist, track['name']))
-        
-        track_features = get_song_features(track['id'])
-        durations.append(track_features.get('duration_ms', 0))
 
 df = pd.DataFrame({
     'artist': artists,
     'album': albums_,
     'track': tracklist,
     'year': years,
-    'lyrics': lyrics,
-    'duration_ms': durations,
+    'lyrics': lyrics
 })
 
 artist = artist.replace(" ","_")
